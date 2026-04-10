@@ -7,6 +7,7 @@ import com.example.app.exception.ResourceNotFoundException;
 import com.example.app.repository.UserRepository;
 import com.example.app.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse findById(Long id) {
+    public UserResponse findById(@NonNull Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ユーザー", id));
         return UserResponse.from(user);
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void delete(@NonNull Long id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("ユーザー", id);
         }

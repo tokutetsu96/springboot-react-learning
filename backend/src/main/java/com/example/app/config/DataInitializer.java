@@ -15,6 +15,7 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
 
     @Override
+    @SuppressWarnings("null")
     public void run(String... args) {
         if (userRepository.count() > 0) {
             return;
