@@ -2,7 +2,7 @@
 
 ## ディレクトリ構成
 
-```
+```text
 backend/src/main/java/com/example/app/
 ├── Application.java                         # エントリーポイント
 ├── config/
@@ -48,7 +48,8 @@ public record UserResponse(Long id, String email, String name, LocalDateTime cre
 }
 ```
 
-**理由:**
+#### 採用理由: DTOの利用
+
 - エンティティの内部構造をAPIに漏らさない
 - 循環参照・遅延ロード問題を回避
 - APIの入出力を明示的に定義できる
@@ -67,7 +68,8 @@ public interface UserService {
 public class UserServiceImpl implements UserService { ... }
 ```
 
-**理由:**
+#### 採用理由: インターフェースの分離
+
 - テスト時にMockに差し替えやすい
 - 将来的な実装の切り替えが容易
 
@@ -82,7 +84,8 @@ public class UserServiceImpl {
 }
 ```
 
-**理由:**
+#### 採用理由: パフォーマンス向上
+
 - `readOnly = true` で不要なflushを抑制しパフォーマンス向上
 - 書き込み処理のみ明示的に `@Transactional` を付与
 
@@ -100,7 +103,8 @@ public class GlobalExceptionHandler {
 }
 ```
 
-**理由:**
+#### 採用理由: ボイラープレート削減
+
 - Controllerに try-catch を書かずに済む
 - エラーレスポンス形式を統一できる
 
@@ -113,7 +117,8 @@ public class UserServiceImpl {
 }
 ```
 
-**理由:**
+#### 採用理由: null安全の確保
+
 - `@Autowired` フィールドインジェクションはテストが困難
 - `final` により実行時のnull安全性が保証される
 
@@ -136,14 +141,15 @@ public class User {
 }
 ```
 
-**理由:**
+#### 採用理由: 自動管理の利便性
+
 - `@CreationTimestamp` / `@UpdateTimestamp` で監査フィールドを自動管理
 - `@NoArgsConstructor` はJPAの要件
 
 ## 依存ライブラリ
 
 | ライブラリ | 用途 |
-|-----------|------|
+| --------- | ---- |
 | spring-boot-starter-web | REST API |
 | spring-boot-starter-data-jpa | ORM・DB操作 |
 | spring-boot-starter-validation | Bean Validation |

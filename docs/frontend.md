@@ -2,30 +2,47 @@
 
 ## ディレクトリ構成
 
-```
+```text
 frontend/
 ├── Dockerfile
 ├── index.html
 ├── package.json
-├── vite.config.js
+├── tsconfig.json
+├── vite.config.ts
 └── src/
-    ├── main.jsx        # エントリーポイント
-    └── App.jsx         # ルートコンポーネント
+    ├── main.tsx              # エントリーポイント
+    ├── App.tsx               # ルーティング定義
+    ├── api/
+    │   ├── client.ts         # axiosインスタンス設定
+    │   ├── transactions.ts
+    │   └── categories.ts
+    ├── components/
+    │   ├── Layout.tsx
+    │   └── LoadingSpinner.tsx
+    ├── hooks/
+    │   └── useTodos.ts
+    ├── pages/
+    │   ├── TransactionListPage.tsx
+    │   ├── TransactionFormPage.tsx
+    │   └── SummaryPage.tsx
+    └── types/
+        └── index.ts
 ```
 
 ## 技術スタック
 
 | 技術 | バージョン | 用途 |
-|------|----------|------|
+| ---- | -------- | ---- |
 | React | 18 | UIフレームワーク |
+| TypeScript | 5 | 型安全な開発 |
 | Vite | 6 | ビルドツール・開発サーバー |
 | Node | 20 | ランタイム |
 
 ## Viteプロキシ設定
 
-`vite.config.js` で `/api/*` へのリクエストをバックエンドに転送する。
+`vite.config.ts` で `/api/*` へのリクエストをバックエンドに転送する。
 
-```js
+```ts
 server: {
   proxy: {
     '/api': {
@@ -50,4 +67,4 @@ npm install
 npm run dev
 ```
 
-アクセス: http://localhost:5173
+アクセス: <http://localhost:5173>
