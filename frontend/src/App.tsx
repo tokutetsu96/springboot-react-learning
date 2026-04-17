@@ -1,59 +1,68 @@
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { TodoForm } from './components/TodoForm'
+import { TodoItem } from './components/TodoItem'
+import { useTodos } from './hooks/useTodos'
+import './App.css'
 
-interface User {
-  id: number
-  email: string
-  name: string
-  createdAt: string
-}
+type Filter = 'all' | 'active' | 'completed'
 
 function App() {
-  const [users, setUsers] = useState<User[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { todos, loading, error, addTodo, toggleTodo, updateTitle, deleteTodo } = useTodos()
+  const [filter, setFilter] = useState<Filter>('all')
 
-  useEffect(() => {
-    fetch('/api/users')
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json() as Promise<User[]>
-      })
-      .then((data) => setUsers(data))
-      .catch((err: unknown) => setError(err instanceof Error ? err.message : 'エラーが発生しました'))
-      .finally(() => setLoading(false))
-  }, [])
+  const filtered = useMemo(() => {
+    if (filter === 'active') return todos.filter((t) => !t.completed)
+    if (filter === 'completed') return todos.filter((t) => t.completed)
+    return todos
+  }, [todos, filter])
+
+  const remaining = todos.filter((t) => !t.completed).length
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>Spring Boot + React + PostgreSQL</h1>
-      <h2>ユーザー一覧</h2>
-      {loading && <p>読み込み中...</p>}
-      {error && <p style={{ color: 'red' }}>エラー: {error}</p>}
-      {!loading && !error && (
-        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-          <thead>
-            <tr>
-              {(['ID', '名前', 'メール', '登録日時'] as const).map((h) => (
-                <th key={h} style={{ border: '1px solid #ccc', padding: '8px', background: '#f5f5f5' }}>
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{user.id}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{user.name}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{user.email}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>
-                  {new Date(user.createdAt).toLocaleString('ja-JP')}
-                </td>
-              </tr>
+    <div className="app">
+      <header className="app-header">
+        <h1>TODO</h1>
+      </header>
+
+      <main className="app-main">
+        <TodoForm onAdd={addTodo} />
+
+        {error && <p className="error-message">エラー: {error}</p>}
+
+        <div className="filter-bar">
+          {(['all', 'active', 'completed'] as Filter[]).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`btn btn-filter ${filter === f ? 'active' : ''}`}
+            >
+              {f === 'all' ? 'すべて' : f === 'active' ? '未完了' : '完了済み'}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <p className="status-message">読み込み中...</p>
+        ) : filtered.length === 0 ? (
+          <p className="status-message">タスクがありません</p>
+        ) : (
+          <ul className="todo-list">
+            {filtered.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onToggle={toggleTodo}
+                onUpdateTitle={updateTitle}
+                onDelete={deleteTodo}
+              />
             ))}
-          </tbody>
-        </table>
-      )}
+          </ul>
+        )}
+
+        {!loading && todos.length > 0 && (
+          <p className="todo-count">{remaining} 件の未完了タスク</p>
+        )}
+      </main>
     </div>
   )
 }
